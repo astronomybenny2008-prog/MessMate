@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Menu - MessMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #0a0a0a;
+            --sidebar-bg: rgba(23, 23, 23, 0.6);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            
+            --breakfast-bg: rgba(245, 158, 11, 0.05);
+            --breakfast-border: rgba(245, 158, 11, 0.2);
+            --breakfast-text: #f59e0b;
+            
+            --lunch-bg: rgba(16, 185, 129, 0.05);
+            --lunch-border: rgba(16, 185, 129, 0.2);
+            --lunch-text: #10b981;
+            
+            --dinner-bg: rgba(139, 92, 246, 0.05);
+            --dinner-border: rgba(139, 92, 246, 0.2);
+            --dinner-text: #8b5cf6;
+            
+            --font-main: 'Outfit', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-icon-bg {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+        .logo-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), transparent);
+            color: var(--text-main);
+            border-left: 3px solid #8b5cf6;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-poster {
+            margin-top: auto;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(45deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+            padding: 2rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-poster h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2.5rem 4rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            color: var(--text-main);
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .header-date {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.03);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(16px);
+        }
+
+        /* Feature Bar (Extra features) */
+        .feature-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-family: inherit;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(16px);
+        }
+
+        .feature-btn:hover, .feature-btn.active {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        /* Meals Layout */
+        .meals-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 900px;
+        }
+
+        .meal-card {
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            transition: transform 0.3s ease;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .meal-card.breakfast { background: var(--breakfast-bg); border-color: var(--breakfast-border); }
+        .meal-card.lunch { background: var(--lunch-bg); border-color: var(--lunch-border); }
+        .meal-card.dinner { background: var(--dinner-bg); border-color: var(--dinner-border); }
+
+        .meal-content {
+            flex: 1;
+            z-index: 2;
+        }
+
+        .meal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meal-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .meal-card.breakfast .meal-icon { background: var(--breakfast-text); }
+        .meal-card.lunch .meal-icon { background: var(--lunch-text); }
+        .meal-card.dinner .meal-icon { background: var(--dinner-text); }
+
+        .meal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meal-card.breakfast .meal-title { color: var(--breakfast-text); }
+        .meal-card.lunch .meal-title { color: var(--lunch-text); }
+        .meal-card.dinner .meal-title { color: var(--dinner-text); }
+
+        .meal-time {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        .meal-items {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meal-items li {
+            position: relative;
+            padding-left: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .meal-items li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .meal-card.breakfast .meal-items li::before { background: var(--breakfast-text); }
+        .meal-card.lunch .meal-items li::before { background: var(--lunch-text); }
+        .meal-card.dinner .meal-items li::before { background: var(--dinner-text); }
+
+        /* Extra Features inside card */
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        .card-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .card-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .meal-image-container {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .meal-image {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: -15px 15px 30px rgba(0,0,0,0.5);
+            border: 8px solid var(--bg-surface, #171717);
+            position: absolute;
+            right: -20px;
+        }
+
+        @media (max-width: 900px) {
+            .meal-card {
+                flex-direction: column;
+            }
+            .meal-image-container {
+                width: 100%;
+                justify-content: center;
+                margin-top: 2rem;
+                height: 200px;
+            }
+            .meal-image {
+                position: relative;
+                right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon-bg">
+                <i class="fa-solid fa-bell-concierge logo-icon"></i>
+            </div>
+            <div>
+                <div class="logo-text">MessMate</div>
+                <div class="logo-sub">Hostel Mess Dashboard</div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <a href="dashboard.html"><li class="nav-item"><i class="fa-solid fa-house"></i> Home</li></a>
+            <a href="today's_menu.html"><li class="nav-item active"><i class="fa-solid fa-bowl-food"></i> Today's Menu</li></a>
+            <li class="nav-item"><i class="fa-regular fa-calendar-days"></i> Weekly Menu</li>
+            <li class="nav-item"><i class="fa-solid fa-star-half-stroke"></i> Rate Meals</li>
+            <li class="nav-item"><i class="fa-regular fa-comment-dots"></i> Feedback</li>
+            <li class="nav-item"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
+            <li class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</li>
+        </ul>
+
+        <div class="sidebar-poster">
+            <i class="fa-solid fa-mug-hot" style="font-size: 2.5rem; margin-bottom: 1rem; color: rgba(255,255,255,0.8);"></i>
+            <h3>Good Food<br>Good Mood!</h3>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-title">
+                <h1>Today's Menu</h1>
+                <p>Check out today's delicious menu.</p>
+            </div>
+            <div class="header-date">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="currentDate">31 May 2025, Saturday</span>
+            </div>
+        </header>
+
+        <!-- Extra Features Bar -->
+        <div class="feature-bar">
+            <button class="feature-btn active"><i class="fa-solid fa-leaf"></i> Veg Only</button>
+            <button class="feature-btn"><i class="fa-solid fa-drumstick-bite"></i> Non-Veg</button>
+            <button class="feature-btn"><i class="fa-solid fa-fire"></i> Show Calories</button>
+        </div>
+
+        <div class="meals-container">
+            <!-- Breakfast -->
+            <div class="meal-card breakfast">
+                <div class="meal-content">
+                    <div class="meal-header">
+                        <div class="meal-icon"><i class="fa-solid fa-mug-saucer"></i></div>
+                        <div>
+                            <div class="meal-title">Breakfast</div>
+                            <div class="meal-time">7:30 AM - 9:00 AM</div>
+                        </div>
+                    </div>
+                    <ul class="meal-items">
+                        <li>Idli</li>
+                        <li>Sambar</li>
+                        <li>Coconut Chutney</li>
+                    </ul>
+                    <div class="card-actions">
+                        <button class="card-btn"><i class="fa-regular fa-star"></i> Rate</button>
+                        <button class="card-btn"><i class="fa-regular fa-bell"></i> Remind Me</button>
+                    </div>
+                </div>
+                <div class="meal-image-container">
+                    <!-- Using unsplash placeholder for South Indian Breakfast -->
+                    <img src="https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?auto=format&fit=crop&w=400&q=80" alt="Breakfast Plate" class="meal-image">
+                </div>
+            </div>
+
+            <!-- Lunch -->
+            <div class="meal-card lunch">
+                <div class="meal-content">
+                    <div class="meal-header">
+                        <div class="meal-icon"><i class="fa-solid fa-sun"></i></div>
+                        <div>
+                            <div class="meal-title">Lunch</div>
+                            <div class="meal-time">12:30 PM - 2:00 PM</div>
+                        </div>
+                    </div>
+                    <ul class="meal-items">
+                        <li>Rice</li>
+                        <li>Sambar</li>
+                        <li>Poriyal</li>
+                        <li>Curd</li>
+                        <li>Appalam</li>
+                    </ul>
+                    <div class="card-actions">
+                        <button class="card-btn"><i class="fa-regular fa-star"></i> Rate</button>
+                        <button class="card-btn"><i class="fa-regular fa-bell"></i> Remind Me</button>
+                    </div>
+                </div>
+                <div class="meal-image-container">
+                    <!-- Using unsplash placeholder for South Indian Thali -->
+                    <img src="https://images.unsplash.com/photo-1628296582103-68f44ff53c23?auto=format&fit=crop&w=400&q=80" alt="Lunch Plate" class="meal-image">
+                </div>
+            </div>
+
+            <!-- Dinner -->
+            <div class="meal-card dinner">
+                <div class="meal-content">
+                    <div class="meal-header">
+                        <div class="meal-icon"><i class="fa-solid fa-moon"></i></div>
+                        <div>
+                            <div class="meal-title">Dinner</div>
+                            <div class="meal-time">7:30 PM - 9:00 PM</div>
+                        </div>
+                    </div>
+                    <ul class="meal-items">
+                        <li>Chapati</li>
+                        <li>Paneer Gravy</li>
+                        <li>Salad</li>
+                    </ul>
+                    <div class="card-actions">
+                        <button class="card-btn"><i class="fa-regular fa-star"></i> Rate</button>
+                        <button class="card-btn"><i class="fa-regular fa-bell"></i> Remind Me</button>
+                    </div>
+                </div>
+                <div class="meal-image-container">
+                    <!-- Using unsplash placeholder for North Indian Food/Chapati -->
+                    <img src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=400&q=80" alt="Dinner Plate" class="meal-image">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set current date
+        const dateOptions = { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', dateOptions);
+
+        // Feature buttons toggle
+        document.querySelectorAll('.feature-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(this.textContent.includes('Veg Only') || this.textContent.includes('Non-Veg')) {
+                    document.querySelectorAll('.feature-btn').forEach(b => {
+                        if(b.textContent.includes('Veg')) b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                } else {
+                    this.classList.toggle('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

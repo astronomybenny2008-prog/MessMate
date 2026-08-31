@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Hostel Mess Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-base: #0a0a0a;
+            --bg-surface: #171717;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-glow: #8b5cf6;
+            --accent-secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --font-main: 'Outfit', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
+            background: rgba(23, 23, 23, 0.6);
+            backdrop-filter: blur(20px);
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), transparent);
+            color: var(--text-main);
+            border-left: 3px solid var(--accent-glow);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-poster {
+            margin-top: auto;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(45deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+            padding: 2rem 1rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+        .sidebar-poster h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2.5rem;
+        }
+
+        .greeting h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .greeting h1 span {
+            display: inline-block;
+            animation: wave 2s infinite;
+            transform-origin: 70% 70%;
+        }
+        
+        @keyframes wave {
+            0% { transform: rotate( 0.0deg) }
+            10% { transform: rotate(14.0deg) }  
+            20% { transform: rotate(-8.0deg) }
+            30% { transform: rotate(14.0deg) }
+            40% { transform: rotate(-4.0deg) }
+            50% { transform: rotate(10.0deg) }
+            60% { transform: rotate( 0.0deg) }
+            100% { transform: rotate( 0.0deg) }
+        }
+
+        .greeting p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1.5rem;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .date-time {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .quote {
+            max-width: 300px;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-left: 3px solid var(--accent-secondary);
+            padding-left: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Grid Layouts */
+        .meals-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .middle-row {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Card styles */
+        .card {
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .meal-card {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
+        }
+        
+        /* Subtle glows for meal cards */
+        .meal-card:nth-child(1) { box-shadow: inset 0 0 40px rgba(245, 158, 11, 0.05); }
+        .meal-card:nth-child(2) { box-shadow: inset 0 0 40px rgba(16, 185, 129, 0.05); }
+        .meal-card:nth-child(3) { box-shadow: inset 0 0 40px rgba(139, 92, 246, 0.05); }
+
+        .meal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meal-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .meal-card:nth-child(1) .meal-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .meal-card:nth-child(2) .meal-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .meal-card:nth-child(3) .meal-icon { background: rgba(139, 92, 246, 0.1); color: var(--accent-glow); }
+
+        .meal-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .meal-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .meal-items {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.4;
+            max-width: 60%;
+            z-index: 2;
+        }
+
+        .meal-image {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            width: 140px;
+            height: 140px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            box-shadow: -10px -10px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 0.8rem;
+            border: 4px solid var(--bg-surface);
+        }
+        
+        /* Emulated food plates using CSS gradients since we don't have images */
+        .plate-breakfast { background: radial-gradient(circle at 30% 30%, #fef3c7, #d97706); }
+        .plate-lunch { background: radial-gradient(circle at 30% 30%, #d1fae5, #059669); }
+        .plate-dinner { background: radial-gradient(circle at 30% 30%, #e0e7ff, #4338ca); }
+
+        /* Rating Card */
+        .rating-card h3 { margin-bottom: 1rem; font-size: 1.1rem;}
+        .rating-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        
+        .stars {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        .stars i {
+            color: var(--warning);
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.5));
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .stars i:hover { transform: scale(1.1); }
+        .stars i.empty { color: #333; filter: none; }
+        
+        .rating-value {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .feedback-emojis {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        
+        .emoji-btn {
+            flex: 1;
+            padding: 0.8rem 0.5rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .emoji-btn:hover { background: rgba(255,255,255,0.1); }
+        .emoji-btn.active { background: rgba(16, 185, 129, 0.15); border-color: var(--success); }
+        
+        .emoji-btn i { font-size: 1.5rem; }
+        .emoji-btn span { font-size: 0.75rem; color: var(--text-muted); }
+        
+        .emoji-btn:nth-child(1) i { color: var(--success); }
+        .emoji-btn:nth-child(2) i { color: var(--warning); }
+        .emoji-btn:nth-child(3) i { color: var(--danger); }
+
+        /* Weekly Menu Table */
+        .weekly-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .weekly-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        
+        th {
+            text-align: left;
+            padding: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.02);
+        }
+        
+        td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #d1d5db;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        
+        .day-col { font-weight: 600; color: var(--text-main); }
+        .highlight-item { color: var(--accent-glow); font-weight: 600; }
+
+        /* Announcements */
+        .announcements-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .announcements-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .announcements-card h3 i { color: var(--accent-secondary); }
+        
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-box {
+            padding: 1rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .alert-box h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .alert-warning h4 { color: var(--warning); }
+        .alert-info h4 { color: #60a5fa; }
+        
+        .alert-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-time {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+        }
+        
+        .view-all {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--accent-glow);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        .view-all:hover { gap: 0.8rem; text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+
+        /* Give Feedback */
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .feedback-form h3 { margin-bottom: 0.2rem; }
+        .feedback-form > p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+        
+        select, textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        select:focus, textarea:focus {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+        
+        select option { background: var(--bg-surface); }
+        
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent-secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: max-content;
+            transition: var(--transition);
+        }
+        
+        .btn-submit:hover {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Chart Area */
+        .overview-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .overview-card h3 { margin-bottom: 1.5rem; }
+        
+        .overview-content {
+            display: flex;
+            gap: 2rem;
+            height: 100%;
+        }
+        
+        .stats-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 150px;
+        }
+        
+        .stat-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-box h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .stat-box h2 i { font-size: 1.5rem; }
+        
+        .stat-box p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .stat-box.secondary h2 { color: var(--text-main); }
+        .stat-box.secondary h2 i { color: var(--accent-secondary); }
+        
+        .chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 150px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        @media (max-width: 1200px) {
+            .middle-row { grid-template-columns: 1fr; }
+            .bottom-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-bowl-food logo-icon"></i>
+            <div>
+                <div class="logo-text">MessMate</div>
+                <div class="logo-sub">Hostel Mess Dashboard</div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <a href="dashboard.html" style="text-decoration: none; color: inherit;"><li class="nav-item active"><i class="fa-solid fa-house"></i> Home</li></a>
+            <a href="today's_menu.html" style="text-decoration: none; color: inherit;"><li class="nav-item"><i class="fa-regular fa-calendar"></i> Today's Menu</li></a>
+            <li class="nav-item"><i class="fa-regular fa-calendar-days"></i> Weekly Menu</li>
+            <li class="nav-item"><i class="fa-regular fa-star"></i> Rate Meals</li>
+            <li class="nav-item"><i class="fa-regular fa-comment-dots"></i> Feedback</li>
+            <li class="nav-item"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
+            <li class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</li>
+        </ul>
+
+        <div class="sidebar-poster">
+            <h3>Good Food</h3>
+            <h3>Good Mood</h3>
+            <i class="fa-solid fa-mug-hot" style="font-size: 2rem; margin-top: 1rem; color: rgba(255,255,255,0.8);"></i>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="greeting">
+                <h1>Good Evening, Harish! <span>👋</span></h1>
+                <p>Here's what's cooking in our mess today.</p>
+            </div>
+            
+            <div class="header-right">
+                <div class="top-actions">
+                    <div class="date-time">
+                        <i class="fa-regular fa-bell"></i>
+                        <span>31 May 2026, Saturday</span>
+                    </div>
+                    <div class="profile-btn">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+                <div class="quote">
+                    "Good food is the foundation of great thoughts and great living."
+                </div>
+            </div>
+        </header>
+
+        <!-- Meals Row -->
+        <div class="meals-row">
+            <!-- Breakfast -->
+            <div class="card glass-panel meal-card">
+                <div>
+                    <div class="meal-header">
+                        <div class="meal-icon"><i class="fa-regular fa-sun"></i></div>
+                        <div>
+                            <div class="meal-title">Breakfast</div>
+                            <div class="meal-time">7:30 AM - 9:00 AM</div>
+                        </div>
+                    </div>
+                    <div class="meal-items">
+                        Idli, Sambar,<br>Chutney
+                    </div>
+                </div>
+                <div class="meal-image plate-breakfast"></div>
+            </div>
+
+            <!-- Lunch -->
+            <div class="card glass-panel meal-card">
+                <div>
+                    <div class="meal-header">
+                        <div class="meal-icon"><i class="fa-solid fa-sun"></i></div>
+                        <div>
+                            <div class="meal-title">Lunch</div>
+                            <div class="meal-time">12:30 PM - 2:00 PM</div>
+                        </div>
+                    </div>
+                    <div class="meal-items">
+                        Rice, Sambar,<br>Poriyal, Curd,<br>Appalam
+                    </div>
+                </div>
+                <div class="meal-image plate-lunch"></div>
+            </div>
+
+            <!-- Dinner -->
+            <div class="card glass-panel meal-card">
+                <div>
+                    <div class="meal-header">
+                        <div class="meal-icon"><i class="fa-solid fa-moon"></i></div>
+                        <div>
+                            <div class="meal-title">Dinner</div>
+                            <div class="meal-time">7:30 PM - 9:00 PM</div>
+                        </div>
+                    </div>
+                    <div class="meal-items">
+                        Chapati, Paneer<br>Gravy, Salad
+                    </div>
+                </div>
+                <div class="meal-image plate-dinner"></div>
+            </div>
+        </div>
+
+        <!-- Middle Row -->
+        <div class="middle-row">
+            <!-- Rate Today's Lunch -->
+            <div class="card glass-panel rating-card">
+                <h3>Rate Today's Lunch</h3>
+                <p>How was the lunch today?</p>
+                
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star empty"></i>
+                </div>
+                <div class="rating-value">4.2 Average Rating</div>
+                
+                <div class="feedback-emojis">
+                    <div class="emoji-btn active">
+                        <i class="fa-solid fa-face-smile"></i>
+                        <span>Loved it!</span>
+                    </div>
+                    <div class="emoji-btn">
+                        <i class="fa-solid fa-face-meh"></i>
+                        <span>Okay</span>
+                    </div>
+                    <div class="emoji-btn">
+                        <i class="fa-solid fa-face-frown"></i>
+                        <span>Needs Imp.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Menu -->
+            <div class="card glass-panel weekly-card">
+                <h3>Weekly Menu</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Breakfast</th>
+                            <th>Lunch</th>
+                            <th>Dinner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="day-col">Mon</td>
+                            <td>Idli, Sambar</td>
+                            <td>Sambar Rice, Poriyal</td>
+                            <td>Chapati, Dal</td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">Tue</td>
+                            <td>Pongal, Chutney</td>
+                            <td>Veg Biryani, Raitha</td>
+                            <td>Dosa, Sambar</td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">Wed</td>
+                            <td>Poori, Kurma</td>
+                            <td>Meals, Curd</td>
+                            <td>Fried Rice, Gobi</td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">Thu</td>
+                            <td>Idli, Chutney</td>
+                            <td>Lemon Rice, Curd</td>
+                            <td class="highlight-item">Chapati, Paneer Gravy</td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">Fri</td>
+                            <td>Dosa, Sambar</td>
+                            <td>Curd Rice, Pickle</td>
+                            <td class="highlight-item">Noodles, Manchurian</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Announcements -->
+            <div class="card glass-panel announcements-card">
+                <h3><i class="fa-solid fa-bullhorn"></i> Mess Announcements</h3>
+                
+                <div class="announcement-list">
+                    <div class="alert-box alert-warning">
+                        <h4><i class="fa-regular fa-clock"></i> Dinner timing changed!</h4>
+                        <p>Dinner will be served from 7:30 PM to 8:30 PM today.</p>
+                        <div class="alert-time">Today, 4:30 PM</div>
+                    </div>
+                    
+                    <div class="alert-box alert-info">
+                        <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Special Menu Tomorrow!</h4>
+                        <p>Chicken Biryani for lunch tomorrow. Don't miss it!</p>
+                        <div class="alert-time">Today, 10:15 AM</div>
+                    </div>
+                </div>
+                
+                <a href="#" class="view-all">View all announcements <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="bottom-row">
+            <!-- Give Feedback -->
+            <div class="card glass-panel feedback-form">
+                <h3>Give Feedback</h3>
+                <p>We value your feedback!</p>
+                
+                <select>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="quality">Food Quality</option>
+                    <option value="hygiene">Hygiene</option>
+                    <option value="staff">Staff Behavior</option>
+                    <option value="other">Other</option>
+                </select>
+                
+                <textarea placeholder="Write your feedback or complaint..."></textarea>
+                
+                <button class="btn-submit">
+                    <i class="fa-regular fa-paper-plane"></i> Submit Feedback
+                </button>
+            </div>
+
+            <!-- Rating Overview -->
+            <div class="card glass-panel overview-card">
+                <h3>Mess Rating Overview</h3>
+                <div class="overview-content">
+                    <div class="stats-col">
+                        <div class="stat-box">
+                            <h2><i class="fa-solid fa-star"></i> 4.2 <span style="font-size: 1rem; color: #666;">/ 5</span></h2>
+                            <p>Overall Mess Rating (This Week)</p>
+                        </div>
+                        <div class="stat-box secondary">
+                            <h2><i class="fa-solid fa-users"></i> 245</h2>
+                            <p>Total Feedbacks</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="ratingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Chart.js
+        const ctx = document.getElementById('ratingChart').getContext('2d');
+        
+        // Gradient for line chart
+        let gradient = ctx.createLinearGradient(0, 0, 0, 150);
+        gradient.addColorStop(0, 'rgba(139, 92, 246, 0.4)');
+        gradient.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Rating Trend (This Week)',
+                    data: [4.1, 4.5, 3.8, 4.3, 4.4, 3.4, 4.4],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#8b5cf6',
+                    pointBorderColor: '#171717',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#9ca3af',
+                            font: { family: "'Outfit', sans-serif" }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 1,
+                        max: 5,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#9ca3af'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
