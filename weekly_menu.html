@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Menu - MessMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #0a0a0a;
+            --sidebar-bg: rgba(23, 23, 23, 0.6);
+            --bg-surface: #171717;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-glow: #8b5cf6;
+            --accent-secondary: #ec4899;
+            --font-main: 'Outfit', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        /* Base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* Sidebar from today's menu */
+        .sidebar {
+            width: 280px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            z-index: 10;
+        }
+        .logo { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+        .logo-icon-bg { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+        .logo-icon { font-size: 2rem; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); }
+        .logo-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item { padding: 1rem 1.25rem; border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 1rem; color: var(--text-muted); font-weight: 600; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+        .nav-item.active { background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), transparent); color: var(--text-main); border-left: 3px solid #8b5cf6; }
+        .nav-item i { font-size: 1.2rem; width: 24px; text-align: center; }
+        
+        .sidebar-poster { margin-top: auto; border-radius: 16px; overflow: hidden; background: linear-gradient(45deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2)); padding: 2rem 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-poster h3 { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1.2; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2.5rem 4rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            color: var(--text-main);
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .header-date {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.03);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(16px);
+        }
+
+        /* Weekly Menu Table Styles */
+        .weekly-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 1.2rem 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.02);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th span {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 0.2rem;
+        }
+        
+        td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #d1d5db;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        
+        .day-col { 
+            font-weight: 700; 
+            color: var(--text-main); 
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon-bg">
+                <i class="fa-solid fa-bell-concierge logo-icon"></i>
+            </div>
+            <div>
+                <div class="logo-text">MessMate</div>
+                <div class="logo-sub">Hostel Mess Dashboard</div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <a href="dashboard.html"><li class="nav-item"><i class="fa-solid fa-house"></i> Home</li></a>
+            <a href="today's_menu.html"><li class="nav-item"><i class="fa-solid fa-bowl-food"></i> Today's Menu</li></a>
+            <a href="weekly_menu.html"><li class="nav-item active"><i class="fa-regular fa-calendar-days"></i> Weekly Menu</li></a>
+            <li class="nav-item"><i class="fa-solid fa-star-half-stroke"></i> Rate Meals</li>
+            <li class="nav-item"><i class="fa-regular fa-comment-dots"></i> Feedback</li>
+            <li class="nav-item"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
+            <li class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</li>
+        </ul>
+
+        <div class="sidebar-poster">
+            <i class="fa-solid fa-mug-hot" style="font-size: 2.5rem; margin-bottom: 1rem; color: rgba(255,255,255,0.8);"></i>
+            <h3>Good Food<br>Good Mood!</h3>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-title">
+                <h1>Weekly Menu</h1>
+                <p>Plan your meals for the week.</p>
+            </div>
+            <div class="header-date">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="currentDate">31 May 2026, Saturday</span>
+            </div>
+        </header>
+
+        <div class="weekly-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Breakfast<span>(7:30 AM - 9:00 AM)</span></th>
+                        <th>Lunch<span>(12:30 PM - 2:00 PM)</span></th>
+                        <th>Dinner<span>(7:30 PM - 9:00 PM)</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="day-col">Mon</td>
+                        <td>Idli, Sambar,<br>Chutney</td>
+                        <td>Sambar Rice,<br>Poriyal, Curd</td>
+                        <td>Chapati, Dal,<br>Salad</td>
+                    </tr>
+                    <tr>
+                        <td class="day-col">Tue</td>
+                        <td>Pongal, Chutney</td>
+                        <td>Veg Biryani, Raitha</td>
+                        <td>Dosa, Sambar</td>
+                    </tr>
+                    <tr>
+                        <td class="day-col">Wed</td>
+                        <td>Poori, Kurma</td>
+                        <td>Meals, Curd</td>
+                        <td>Fried Rice, Gobi<br>Manchurian</td>
+                    </tr>
+                    <tr>
+                        <td class="day-col">Thu</td>
+                        <td>Idli, Chutney</td>
+                        <td>Lemon Rice, Curd</td>
+                        <td>Chapati, Paneer<br>Gravy</td>
+                    </tr>
+                    <tr>
+                        <td class="day-col">Fri</td>
+                        <td>Dosa, Sambar</td>
+                        <td>Curd Rice, Pickle</td>
+                        <td>Noodles, Manchurian</td>
+                    </tr>
+                    <tr>
+                        <td class="day-col">Sat</td>
+                        <td>Upma, Chutney</td>
+                        <td>Veg Pulao, Raitha</td>
+                        <td>Chapati, Dal Tadka</td>
+                    </tr>
+                    <tr>
+                        <td class="day-col">Sun</td>
+                        <td>Poori, Masala</td>
+                        <td>Meals, Curd</td>
+                        <td>Parotta, Veg Kurma</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // Set current date
+        const dateOptions = { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', dateOptions);
+    </script>
+</body>
+</html>
