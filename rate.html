@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Rate Your Meal</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --sidebar-bg: #1e1e1e;
+            --card-bg: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4caf50;
+            --accent-gold: #ffc107;
+            --hover-bg: #333333;
+            --active-bg: #388e3c;
+            --border-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+        }
+
+        .logo-text h2 {
+            font-size: 18px;
+            color: var(--accent-green);
+        }
+
+        .logo-text p {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-primary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links li a:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .nav-links li.active a {
+            background-color: #2e3b32;
+            color: var(--accent-green);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        .sidebar-bottom-card {
+            margin-top: auto;
+            background-color: #2e3b32;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: var(--accent-green);
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .sidebar-bottom-card span {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+        }
+
+        .meal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background-color: var(--sidebar-bg);
+            padding: 5px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 0;
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .tab.active {
+            background-color: var(--active-bg);
+        }
+
+        .rating-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .rating-card h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            font-size: 40px;
+            color: var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+        }
+        
+        .star.filled {
+            color: var(--accent-gold);
+        }
+
+        .star:hover {
+            transform: scale(1.1);
+        }
+
+        .rating-avg {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .feedback-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feedback-btn {
+            flex: 1;
+            background-color: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .feedback-btn:hover {
+            background-color: var(--hover-bg);
+            transform: translateY(-2px);
+        }
+
+        .smiley {
+            font-size: 36px;
+        }
+
+        .footer-stats {
+            margin-top: 20px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .emoji-loved { color: #4caf50; }
+        .emoji-okay { color: #ffc107; }
+        .emoji-needs-improvement { color: #f44336; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">🍽️</div>
+            <div class="logo-text">
+                <h2>MessMate</h2>
+                <p>Hostel Mess Dashboard</p>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><span class="nav-icon">🏠</span> Home</a></li>
+            <li><a href="today's_menu.html"><span class="nav-icon">🍲</span> Today's Menu</a></li>
+            <li><a href="weekly_menu.html"><span class="nav-icon">📅</span> Weekly Menu</a></li>
+            <li class="active"><a href="rate.html"><span class="nav-icon">⭐</span> Rate Meals</a></li>
+            <li><a href="#"><span class="nav-icon">💬</span> Feedback</a></li>
+            <li><a href="#"><span class="nav-icon">📢</span> Announcements</a></li>
+            <li><a href="#"><span class="nav-icon">📊</span> Analytics</a></li>
+        </ul>
+
+        <div class="sidebar-bottom-card">
+            <span>☕</span>
+            <p>Good Food<br>Good Mood!</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <h1>Rate Your Meal</h1>
+            <p>Your feedback helps us serve you better!</p>
+        </div>
+
+        <div class="meal-tabs">
+            <button class="tab">Breakfast</button>
+            <button class="tab active">Lunch</button>
+            <button class="tab">Dinner</button>
+        </div>
+
+        <div class="rating-card">
+            <h3>How was today's Lunch?</h3>
+            <div class="stars">
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star">★</span>
+            </div>
+            <p class="rating-avg">4.2 Average Rating</p>
+            
+            <div class="feedback-options">
+                <button class="feedback-btn">
+                    <span class="smiley emoji-loved">😃</span>
+                    <span>Loved it!</span>
+                </button>
+                <button class="feedback-btn">
+                    <span class="smiley emoji-okay">😐</span>
+                    <span>Okay</span>
+                </button>
+                <button class="feedback-btn">
+                    <span class="smiley emoji-needs-improvement">🙁</span>
+                    <span>Needs Improvement</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="footer-stats">
+            <span>👥</span> 128 students rated today's lunch
+        </div>
+    </main>
+
+</body>
+</html>
