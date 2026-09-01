@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Feedback & Complaints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #0c0e12;
+            --bg-surface: #14171f;
+            --bg-card: rgba(26, 31, 44, 0.7);
+            --bg-input: #1b202c;
+            --glass-bg: rgba(25, 30, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.12);
+            --text-main: #f3f4f6;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --primary-glow: rgba(34, 197, 94, 0.35);
+            
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-blue: #38bdf8;
+            
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --font-main: 'Outfit', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.06), transparent 35%),
+                radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.07), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(20, 23, 31, 0.5), transparent 70%);
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 270px;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
+            background: rgba(15, 18, 26, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            margin-bottom: 2.5rem;
+            padding-left: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--primary);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        .logo-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1.1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.04));
+            color: #4ade80;
+            border-left: 3px solid var(--primary);
+            border-color: rgba(34, 197, 94, 0.2) rgba(34, 197, 94, 0.2) rgba(34, 197, 94, 0.2) var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            font-size: 1.15rem;
+            width: 22px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+            filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.5));
+        }
+
+        .sidebar-bottom-card {
+            margin-top: auto;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(34, 197, 94, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 1.4rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-bottom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.5), transparent);
+        }
+
+        .sidebar-bottom-card .card-art {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            animation: gentle-bounce 3s infinite ease-in-out;
+        }
+
+        @keyframes gentle-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .sidebar-bottom-card p {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #86efac;
+            font-style: italic;
+            letter-spacing: -0.2px;
+            line-height: 1.3;
+        }
+
+        .sidebar-bottom-card small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 0.25rem;
+            font-style: normal;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            padding: 2.5rem 3.5rem;
+            overflow-y: auto;
+            max-width: 1500px;
+        }
+
+        /* Top Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-top: 0.3rem;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1.1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stat-pill strong {
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .stat-pill .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+            display: inline-block;
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Feedback Form Card */
+        .form-card {
+            padding: 2.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::after {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .form-header {
+            margin-bottom: 1.8rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .form-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 0.55rem;
+            letter-spacing: 0.2px;
+        }
+
+        .form-label span.req {
+            color: var(--accent-rose);
+            margin-left: 3px;
+        }
+
+        /* Select Input Styling */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 0.95rem 1.2rem;
+            background-color: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 500;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .custom-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            background-color: #1e2433;
+        }
+
+        .custom-select option {
+            background-color: #171b26;
+            color: #f1f5f9;
+            padding: 10px;
+        }
+
+        .select-icon {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        /* Quick Pills / Filter Chips */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .chip {
+            padding: 0.45rem 0.9rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .chip:hover {
+            background: rgba(255, 255, 255, 0.09);
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .chip.active {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--primary);
+            color: #86efac;
+            font-weight: 600;
+        }
+
+        .chip.type-complaint.active {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: var(--danger);
+            color: #fca5a5;
+        }
+
+        .chip.type-suggestion.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-blue);
+            color: #93c5fd;
+        }
+
+        .chip.type-compliment.active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--warning);
+            color: #fcd34d;
+        }
+
+        /* Textarea Field */
+        .textarea-container {
+            position: relative;
+        }
+
+        .custom-textarea {
+            width: 100%;
+            height: 180px;
+            padding: 1.1rem 1.2rem 2.2rem 1.2rem;
+            background-color: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: none;
+            transition: var(--transition);
+        }
+
+        .custom-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            background-color: #1e2433;
+        }
+
+        .custom-textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: 0.8rem;
+            right: 1.1rem;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .char-counter.warning {
+            color: var(--accent-amber);
+            font-weight: 700;
+        }
+
+        .char-counter.limit {
+            color: var(--accent-rose);
+            font-weight: 700;
+        }
+
+        /* Details / Options Row */
+        .form-options-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+        }
+
+        .input-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .input-inline label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-inline input {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.85rem;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.88rem;
+            transition: var(--transition);
+        }
+
+        .input-inline input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.2rem;
+            grid-column: span 2;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1.05rem 1.8rem;
+            background: linear-gradient(135deg, #22c55e, #15803d);
+            border: none;
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-family: var(--font-main);
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.35);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2ae06c, #16a34a);
+            box-shadow: 0 6px 25px rgba(34, 197, 94, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
+        }
+
+        .submit-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .submit-btn:hover i {
+            transform: translateX(4px) translateY(-2px);
+        }
+
+        /* Sidebar Side Column (Feedbacks & Status) */
+        .side-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            padding: 1.8rem;
+        }
+
+        .info-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .info-card-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .badge-count {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.3rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-main);
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .filter-tab.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        /* Feedback Timeline List */
+        .feedback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 0.3rem;
+        }
+
+        /* Custom Scrollbar */
+        .feedback-list::-webkit-scrollbar,
+        .main-content::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .feedback-list::-webkit-scrollbar-thumb,
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        .feedback-item {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 1.1rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .feedback-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .feedback-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-cat-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .status-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .status-badge.resolved {
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-badge.review {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fde047;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.progress {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .feedback-text {
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+            margin-bottom: 0.6rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .feedback-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .committee-reply {
+            margin-top: 0.75rem;
+            padding: 0.7rem 0.9rem;
+            background: rgba(34, 197, 94, 0.06);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+
+        .committee-reply strong {
+            color: #86efac;
+            display: block;
+            margin-bottom: 0.2rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* Quick Contact / Help Card */
+        .help-card {
+            background: linear-gradient(135deg, rgba(20, 24, 33, 0.9), rgba(30, 36, 50, 0.7));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .help-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .help-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .help-content p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            background: rgba(18, 22, 32, 0.95);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            backdrop-filter: blur(16px);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 197, 94, 0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            color: #ffffff;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-top: 0.1rem;
+        }
+
+        .toast-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .toast-content p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 1080px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding: 1.2rem 1.5rem;
+            }
+            .nav-menu {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            .nav-item {
+                white-space: nowrap;
+                padding: 0.6rem 0.9rem;
+            }
+            .sidebar-bottom-card {
+                display: none;
+            }
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+            .form-options-row {
+                grid-template-columns: 1fr;
+            }
+            .toggle-container {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon-box">
+                <i class="fa-solid fa-bell-concierge"></i>
+            </div>
+            <div>
+                <div class="logo-text">Mess<span>Mate</span></div>
+                <div class="logo-sub">Hostel Mess Dashboard</div>
+            </div>
+        </a>
+
+        <ul class="nav-menu">
+            <li><a href="dashboard.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-house"></i> <span>Home</span></div></a></li>
+            <li><a href="today's_menu.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-bowl-food"></i> <span>Today's Menu</span></div></a></li>
+            <li><a href="weekly_menu.html" class="nav-link"><div class="nav-item"><i class="fa-regular fa-calendar-days"></i> <span>Weekly Menu</span></div></a></li>
+            <li><a href="rate.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-star-half-stroke"></i> <span>Rate Meals</span></div></a></li>
+            <li><a href="feedback.html" class="nav-link"><div class="nav-item active"><i class="fa-regular fa-comment-dots"></i> <span>Feedback</span></div></a></li>
+            <li><a href="#" class="nav-link" onclick="alert('📢 Hostel Announcements:\n1. Special Feast this Sunday at 7:30 PM!\n2. Mess card verification is on Thursday.'); return false;"><div class="nav-item"><i class="fa-solid fa-bullhorn"></i> <span>Announcements</span></div></a></li>
+            <li><a href="#" class="nav-link" onclick="alert('📊 Mess Analytics:\n• Mess satisfaction: 94.2%\n• Meals served today: 840\n• Top rated meal: Paneer Butter Masala'); return false;"><div class="nav-item"><i class="fa-solid fa-chart-simple"></i> <span>Analytics</span></div></a></li>
+        </ul>
+
+        <div class="sidebar-bottom-card">
+            <div class="card-art">☕</div>
+            <p>Good Food<br>Good Mood!</p>
+            <small>Mess Quality Committee</small>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="header-title">
+                <h1><i class="fa-regular fa-message" style="color: var(--primary); font-size: 1.8rem;"></i> Feedback / Complaint</h1>
+                <p>We value your feedback! Help us maintain the highest mess standards.</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-pill">
+                    <span class="indicator"></span>
+                    <span>Avg Response Time: <strong>&lt; 2 hours</strong></span>
+                </div>
+                <div class="stat-pill">
+                    <i class="fa-solid fa-shield-check" style="color: #38bdf8;"></i>
+                    <span>Resolution Rate: <strong>96.4%</strong></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout Grid -->
+        <div class="content-grid">
+            
+            <!-- Feedback Form Card (Matching Provided Mockup) -->
+            <section class="glass-panel form-card">
+                <div class="form-header">
+                    <h2>Submit Your Voice</h2>
+                    <p>Directly escalated to Mess Warden & Student Food Committee</p>
+                </div>
+
+                <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+                    
+                    <!-- Category Dropdown -->
+                    <div class="form-group">
+                        <label class="form-label" for="categorySelect">
+                            Select Category <span class="req">*</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select id="categorySelect" class="custom-select" required>
+                                <option value="" disabled selected>-- Choose feedback category --</option>
+                                <option value="Food Quality">Food Quality & Freshness</option>
+                                <option value="Hygiene & Cleanliness">Hygiene & Mess Cleanliness</option>
+                                <option value="Taste & Spices">Taste, Salt & Spice Balance</option>
+                                <option value="Portion Size">Portion Size & Serving</option>
+                                <option value="Staff & Service">Mess Staff Behavior & Service</option>
+                                <option value="Timing & Delays">Mess Timings & Queue Delays</option>
+                                <option value="Utensils & Seating">Utensils, Water & Seating</option>
+                                <option value="Special Suggestion">Menu Suggestion / Request</option>
+                                <option value="Other">Other / General Feedback</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Meal Session Selection (Chips) -->
+                    <div class="form-group">
+                        <label class="form-label">Related Meal Session</label>
+                        <div class="chips-container" id="mealChips">
+                            <span class="chip active" data-meal="Breakfast"><i class="fa-solid fa-mug-saucer"></i> Breakfast</span>
+                            <span class="chip" data-meal="Lunch"><i class="fa-solid fa-utensils"></i> Lunch</span>
+                            <span class="chip" data-meal="Snacks"><i class="fa-solid fa-cookie-bite"></i> Snacks / Tea</span>
+                            <span class="chip" data-meal="Dinner"><i class="fa-solid fa-moon"></i> Dinner</span>
+                            <span class="chip" data-meal="General"><i class="fa-solid fa-building"></i> General Mess</span>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Type (Nature) -->
+                    <div class="form-group">
+                        <label class="form-label">Feedback Type</label>
+                        <div class="chips-container" id="typeChips">
+                            <span class="chip type-complaint active" data-type="Complaint"><i class="fa-solid fa-triangle-exclamation"></i> Complaint</span>
+                            <span class="chip type-suggestion" data-type="Suggestion"><i class="fa-regular fa-lightbulb"></i> Suggestion</span>
+                            <span class="chip type-compliment" data-type="Compliment"><i class="fa-regular fa-heart"></i> Compliment / Appreciation</span>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Textarea -->
+                    <div class="form-group">
+                        <label class="form-label" for="feedbackText">
+                            Your Feedback <span class="req">*</span>
+                        </label>
+                        <div class="textarea-container">
+                            <textarea 
+                                id="feedbackText" 
+                                class="custom-textarea" 
+                                maxlength="500" 
+                                placeholder="Write your feedback or complaint in detail..." 
+                                required
+                                oninput="updateCharCount(this)"></textarea>
+                            <div class="char-counter" id="charCounter">0/500</div>
+                        </div>
+                    </div>
+
+                    <!-- Student Identification & Details -->
+                    <div class="form-options-row">
+                        <div class="input-inline">
+                            <label for="studentName">Student Name</label>
+                            <input type="text" id="studentName" value="Harish K." placeholder="Your Name">
+                        </div>
+                        <div class="input-inline">
+                            <label for="roomNumber">Hostel & Room No.</label>
+                            <input type="text" id="roomNumber" value="Block B - 304" placeholder="e.g. Block A - 201">
+                        </div>
+                        
+                        <div class="toggle-container">
+                            <label class="toggle-label" for="anonToggle">
+                                <i class="fa-solid fa-user-secret" style="color: var(--primary);"></i>
+                                <span>Submit Anonymously</span>
+                            </label>
+                            <label class="switch">
+                                <input type="checkbox" id="anonToggle" onchange="toggleAnonymous(this)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Submit Feedback</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Side Column: Recent Submissions & Status Tracking -->
+            <div class="side-column">
+                
+                <!-- Status Tracking Card -->
+                <section class="glass-panel info-card">
+                    <div class="info-card-header">
+                        <h3>
+                            <i class="fa-solid fa-clock-rotate-left" style="color: #38bdf8;"></i>
+                            Recent Feedback Status
+                        </h3>
+                        <span class="badge-count" id="feedbackCount">3 Total</span>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="filterFeedbacks('all', this)">All</button>
+                        <button class="filter-tab" onclick="filterFeedbacks('Resolved', this)">Resolved</button>
+                        <button class="filter-tab" onclick="filterFeedbacks('Under Review', this)">In Review</button>
+                    </div>
+
+                    <!-- Timeline List -->
+                    <div class="feedback-list" id="feedbackList">
+                        <!-- Dynamic items loaded via JS -->
+                    </div>
+                </section>
+
+                <!-- Help / Escalation Box -->
+                <div class="help-card">
+                    <div class="help-icon">
+                        <i class="fa-solid fa-phone-volume"></i>
+                    </div>
+                    <div class="help-content">
+                        <h4>Urgent Mess Issue?</h4>
+                        <p>Contact Mess Warden directly at <strong>Ext: 4022</strong> or visit the Mess Incharge Office (8 AM - 9 PM).</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification Popup -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Default Seed Feedbacks
+        const defaultFeedbacks = [
+            {
+                id: "MM-1042",
+                category: "Food Quality",
+                meal: "Dinner",
+                type: "Complaint",
+                text: "The chapati served during Wednesday dinner was too dry and hard. Please ensure softer batches.",
+                author: "Harish K. (Block B - 304)",
+                time: "Yesterday, 8:45 PM",
+                status: "Resolved",
+                reply: "Noted! Cook staff has been instructed on proper flour kneading and tawa temperature control."
+            },
+            {
+                id: "MM-1041",
+                category: "Hygiene & Cleanliness",
+                meal: "Lunch",
+                type: "Complaint",
+                text: "Water dispenser near table 4 needs filter replacement. Water flow was slow.",
+                author: "Anonymous Student",
+                time: "2 days ago",
+                status: "Under Review",
+                reply: "Maintenance team is scheduled to inspect and replace the cartridge today at 4:00 PM."
+            },
+            {
+                id: "MM-1039",
+                category: "Special Suggestion",
+                meal: "Snacks",
+                type: "Suggestion",
+                text: "Can we please have Cold Coffee or Lemon Iced Tea on Friday evenings instead of hot tea during summers?",
+                author: "Rahul S. (Block A - 112)",
+                time: "3 days ago",
+                status: "Under Review",
+                reply: null
+            }
+        ];
+
+        // Initialize Feedbacks from LocalStorage
+        function getFeedbacks() {
+            const saved = localStorage.getItem('messmate_feedbacks');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    return defaultFeedbacks;
+                }
+            }
+            localStorage.setItem('messmate_feedbacks', JSON.stringify(defaultFeedbacks));
+            return defaultFeedbacks;
+        }
+
+        function saveFeedbacks(list) {
+            localStorage.setItem('messmate_feedbacks', JSON.stringify(list));
+        }
+
+        // Live Character Counter
+        function updateCharCount(textarea) {
+            const currentLen = textarea.value.length;
+            const counter = document.getElementById('charCounter');
+            counter.innerText = `${currentLen}/500`;
+
+            if (currentLen > 450) {
+                counter.className = 'char-counter limit';
+            } else if (currentLen > 350) {
+                counter.className = 'char-counter warning';
+            } else {
+                counter.className = 'char-counter';
+            }
+        }
+
+        // Anonymous Mode Toggle
+        function toggleAnonymous(checkbox) {
+            const nameInput = document.getElementById('studentName');
+            const roomInput = document.getElementById('roomNumber');
+            if (checkbox.checked) {
+                nameInput.dataset.prev = nameInput.value;
+                roomInput.dataset.prev = roomInput.value;
+                nameInput.value = "Anonymous Student";
+                roomInput.value = "Confidential";
+                nameInput.disabled = true;
+                roomInput.disabled = true;
+                nameInput.style.opacity = "0.6";
+                roomInput.style.opacity = "0.6";
+            } else {
+                nameInput.value = nameInput.dataset.prev || "Harish K.";
+                roomInput.value = roomInput.dataset.prev || "Block B - 304";
+                nameInput.disabled = false;
+                roomInput.disabled = false;
+                nameInput.style.opacity = "1";
+                roomInput.style.opacity = "1";
+            }
+        }
+
+        // Chip Selectors
+        document.querySelectorAll('#mealChips .chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('#mealChips .chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('#typeChips .chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('#typeChips .chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Toast Notification System
+        function showToast(title, message, isSuccess = true) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <i class="fa-solid ${isSuccess ? 'fa-circle-check toast-icon' : 'fa-triangle-exclamation toast-icon'}" style="${!isSuccess ? 'color: var(--accent-rose);' : ''}"></i>
+                <div class="toast-content">
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            
+            // Animation trigger
+            setTimeout(() => toast.classList.add('show'), 50);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 4500);
+        }
+
+        // Render Feedback List
+        let currentFilter = 'all';
+        function renderFeedbacks() {
+            const list = getFeedbacks();
+            const listContainer = document.getElementById('feedbackList');
+            const countBadge = document.getElementById('feedbackCount');
+
+            const filtered = currentFilter === 'all' 
+                ? list 
+                : list.filter(item => item.status === currentFilter);
+
+            countBadge.innerText = `${list.length} Total`;
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-dim);">
+                        <i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        <p>No feedbacks in this category yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = filtered.map(item => {
+                const statusClass = item.status === 'Resolved' ? 'resolved' : (item.status === 'Under Review' ? 'review' : 'progress');
+                const statusIcon = item.status === 'Resolved' ? 'fa-check' : (item.status === 'Under Review' ? 'fa-spinner fa-spin-pulse' : 'fa-bolt');
+
+                return `
+                    <div class="feedback-item">
+                        <div class="feedback-item-header">
+                            <div class="feedback-cat-tag">
+                                <i class="fa-solid fa-tag"></i>
+                                <span>${item.category} • ${item.meal || 'General'}</span>
+                            </div>
+                            <span class="status-badge ${statusClass}">
+                                <i class="fa-solid ${statusIcon}"></i> ${item.status}
+                            </span>
+                        </div>
+                        <p class="feedback-text">"${item.text}"</p>
+                        ${item.reply ? `
+                            <div class="committee-reply">
+                                <strong><i class="fa-solid fa-user-shield"></i> Mess Warden Response:</strong>
+                                ${item.reply}
+                            </div>
+                        ` : ''}
+                        <div class="feedback-item-footer">
+                            <span><i class="fa-regular fa-user"></i> ${item.author}</span>
+                            <span><i class="fa-regular fa-clock"></i> ${item.time} • <strong>#${item.id}</strong></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterFeedbacks(status, btn) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            renderFeedbacks();
+        }
+
+        // Form Submit Handler
+        function handleFeedbackSubmit(event) {
+            event.preventDefault();
+
+            const category = document.getElementById('categorySelect').value;
+            const text = document.getElementById('feedbackText').value.trim();
+            const activeMealEl = document.querySelector('#mealChips .chip.active');
+            const activeTypeEl = document.querySelector('#typeChips .chip.active');
+            const isAnon = document.getElementById('anonToggle').checked;
+            const name = isAnon ? "Anonymous Student" : (document.getElementById('studentName').value.trim() || "Student");
+            const room = isAnon ? "" : (document.getElementById('roomNumber').value.trim() || "");
+
+            if (!category) {
+                showToast("Missing Category", "Please select a category for your feedback.", false);
+                return;
+            }
+
+            if (!text) {
+                showToast("Empty Feedback", "Please write your feedback details.", false);
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalContent = submitBtn.innerHTML;
+
+            // Loading state animation
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...`;
+
+            setTimeout(() => {
+                const ticketId = "MM-" + Math.floor(1000 + Math.random() * 9000);
+                const newFeedback = {
+                    id: ticketId,
+                    category: category,
+                    meal: activeMealEl ? activeMealEl.dataset.meal : 'General',
+                    type: activeTypeEl ? activeTypeEl.dataset.type : 'General',
+                    text: text,
+                    author: isAnon ? "Anonymous Student" : `${name} (${room})`,
+                    time: "Just now",
+                    status: "Under Review",
+                    reply: null
+                };
+
+                const currentList = getFeedbacks();
+                currentList.unshift(newFeedback);
+                saveFeedbacks(currentList);
+
+                // Reset form
+                document.getElementById('feedbackText').value = "";
+                document.getElementById('categorySelect').selectedIndex = 0;
+                updateCharCount(document.getElementById('feedbackText'));
+
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+
+                renderFeedbacks();
+                showToast(
+                    "Feedback Submitted! 🚀", 
+                    `Ticket #${ticketId} created. The Mess Committee will review shortly.`
+                );
+            }, 600);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFeedbacks();
+        });
+    </script>
+</body>
+</html>
