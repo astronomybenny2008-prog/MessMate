@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Mess Analytics & Trend Insights</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-base: #0a0c10;
+            --bg-surface: #12151e;
+            --bg-card: rgba(22, 27, 38, 0.75);
+            --bg-input: #191f2d;
+            --glass-bg: rgba(22, 27, 38, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.12);
+            --text-main: #f3f4f6;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.35);
+            
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            --accent-sky: #38bdf8;
+            --accent-orange: #f97316;
+            
+            --font-main: 'Outfit', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 12% 15%, rgba(139, 92, 246, 0.08), transparent 35%),
+                radial-gradient(circle at 88% 80%, rgba(16, 185, 129, 0.07), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(18, 21, 30, 0.6), transparent 70%);
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 270px;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
+            background: rgba(15, 18, 26, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            margin-bottom: 2.5rem;
+            padding-left: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(56, 189, 248, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #c084fc;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.25);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            color: #c084fc;
+            -webkit-text-fill-color: #c084fc;
+        }
+
+        .logo-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1.1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.22), rgba(139, 92, 246, 0.05));
+            color: #c084fc;
+            border-left: 3px solid var(--primary);
+            border-color: rgba(139, 92, 246, 0.3) rgba(139, 92, 246, 0.3) rgba(139, 92, 246, 0.3) var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            font-size: 1.15rem;
+            width: 22px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .nav-item.active i {
+            color: #c084fc;
+            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+        }
+
+        .sidebar-bottom-card {
+            margin-top: auto;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.12), rgba(56, 189, 248, 0.08));
+            padding: 1.4rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-bottom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+        }
+
+        .sidebar-bottom-card .card-art {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            animation: gentle-bounce 3s infinite ease-in-out;
+        }
+
+        @keyframes gentle-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .sidebar-bottom-card p {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #d8b4fe;
+            font-style: italic;
+            letter-spacing: -0.2px;
+            line-height: 1.3;
+        }
+
+        .sidebar-bottom-card small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 0.25rem;
+            font-style: normal;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            padding: 2.5rem 3.5rem;
+            overflow-y: auto;
+            max-width: 1550px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-top: 0.3rem;
+        }
+
+        .timeframe-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            padding: 0.6rem 1.1rem;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .timeframe-badge strong {
+            color: #c084fc;
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.4rem;
+            margin-bottom: 2.2rem;
+        }
+
+        .kpi-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 1.4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .kpi-value {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .kpi-trend {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.4rem;
+        }
+
+        .kpi-trend.positive { color: var(--accent-emerald); }
+        .kpi-trend.negative { color: var(--accent-rose); }
+        .kpi-trend.neutral { color: var(--accent-sky); }
+
+        /* Main Grid: Charts & Discussion */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Chart Section */
+        .chart-card {
+            padding: 2rem;
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .chart-header-left h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .chart-header-left p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .chart-pill-tabs {
+            display: flex;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.25rem;
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .chart-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-family: var(--font-main);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chart-tab-btn.active {
+            background: rgba(139, 92, 246, 0.25);
+            color: #d8b4fe;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        .chart-canvas-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        /* Interactive Anomaly Badges on Graph */
+        .graph-insights-strip {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            overflow-x: auto;
+            padding-bottom: 0.3rem;
+        }
+
+        .insight-tag-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            padding: 0.45rem 0.8rem;
+            font-family: var(--font-main);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: var(--transition);
+        }
+
+        .insight-tag-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .insight-tag-btn.active {
+            background: rgba(139, 92, 246, 0.18);
+            border-color: var(--primary);
+            color: #d8b4fe;
+            font-weight: 600;
+        }
+
+        /* Right Column: Student Reason & Explanation Forum */
+        .forum-card {
+            padding: 2rem;
+            position: relative;
+        }
+
+        .forum-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .forum-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .forum-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Submit Reason Form */
+        .reason-form {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 1.4rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .form-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .form-row {
+            margin-bottom: 1rem;
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-select, .form-input, .form-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 0.9rem;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-select:focus, .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            background: #1c2333;
+        }
+
+        .form-textarea {
+            height: 90px;
+            resize: none;
+        }
+
+        .factor-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.3rem;
+        }
+
+        .factor-chip {
+            padding: 0.35rem 0.7rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .factor-chip:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+
+        .factor-chip.active {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+            color: #d8b4fe;
+            font-weight: 600;
+        }
+
+        .submit-reason-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+            transition: var(--transition);
+        }
+
+        .submit-reason-btn:hover {
+            background: linear-gradient(135deg, #9d74f8, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Explanations Stream List */
+        .reasons-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 0.4rem;
+        }
+
+        .reason-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 1.15rem;
+            transition: var(--transition);
+        }
+
+        .reason-card:hover {
+            background: rgba(255, 255, 255, 0.045);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .reason-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .trend-ref-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #d8b4fe;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .trend-ref-tag.spike {
+            background: rgba(244, 63, 94, 0.15);
+            color: #fca5a5;
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        .trend-ref-tag.drop {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fdba74;
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+
+        .trend-ref-tag.peak {
+            background: rgba(16, 185, 129, 0.15);
+            color: #86efac;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .reason-factor-pill {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .reason-text {
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+        }
+
+        .reason-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 0.6rem;
+        }
+
+        .agree-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            padding: 0.25rem 0.65rem;
+            font-family: var(--font-main);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: var(--transition);
+        }
+
+        .agree-btn:hover {
+            background: rgba(139, 92, 246, 0.15);
+            color: #d8b4fe;
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: scale(1.05);
+        }
+
+        .agree-btn.agreed {
+            background: rgba(16, 185, 129, 0.18);
+            border-color: var(--accent-emerald);
+            color: #86efac;
+            font-weight: 700;
+        }
+
+        .warden-action {
+            margin-top: 0.65rem;
+            padding: 0.55rem 0.8rem;
+            background: rgba(139, 92, 246, 0.06);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 6px 6px 0;
+            font-size: 0.78rem;
+            color: #cbd5e1;
+        }
+
+        .warden-action strong {
+            color: #d8b4fe;
+            display: block;
+            margin-bottom: 0.15rem;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            background: rgba(18, 22, 32, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            backdrop-filter: blur(16px);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            color: #ffffff;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Floating +1 Emoji */
+        .floating-emoji {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            font-size: 1.1rem;
+            z-index: 100;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(0, -30px) scale(1.4); }
+        }
+
+        /* Scrollbar */
+        .reasons-stream::-webkit-scrollbar,
+        .main-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        .reasons-stream::-webkit-scrollbar-thumb,
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 1200px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .analytics-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding: 1.2rem 1.5rem;
+            }
+            .nav-menu {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            .nav-item {
+                white-space: nowrap;
+                padding: 0.6rem 0.9rem;
+            }
+            .sidebar-bottom-card { display: none; }
+            .main-content { padding: 1.5rem 1rem; }
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon-box">
+                <i class="fa-solid fa-bell-concierge"></i>
+            </div>
+            <div>
+                <div class="logo-text">Mess<span>Mate</span></div>
+                <div class="logo-sub">Hostel Mess Dashboard</div>
+            </div>
+        </a>
+
+        <ul class="nav-menu">
+            <li><a href="dashboard.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-house"></i> <span>Home</span></div></a></li>
+            <li><a href="today's_menu.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-bowl-food"></i> <span>Today's Menu</span></div></a></li>
+            <li><a href="weekly_menu.html" class="nav-link"><div class="nav-item"><i class="fa-regular fa-calendar-days"></i> <span>Weekly Menu</span></div></a></li>
+            <li><a href="rate.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-star-half-stroke"></i> <span>Rate Meals</span></div></a></li>
+            <li><a href="feedback.html" class="nav-link"><div class="nav-item"><i class="fa-regular fa-comment-dots"></i> <span>Feedback</span></div></a></li>
+            <li><a href="announcement.html" class="nav-link"><div class="nav-item"><i class="fa-solid fa-bullhorn"></i> <span>Announcements</span></div></a></li>
+            <li><a href="analytics.html" class="nav-link"><div class="nav-item active"><i class="fa-solid fa-chart-simple"></i> <span>Analytics</span></div></a></li>
+        </ul>
+
+        <div class="sidebar-bottom-card">
+            <div class="card-art">☕</div>
+            <p>Good Food<br>Good Mood!</p>
+            <small>Mess Quality Committee</small>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="header-title">
+                <h1>
+                    <i class="fa-solid fa-chart-line" style="color: #c084fc; font-size: 1.8rem;"></i> 
+                    Mess Analytics & Trend Insights
+                </h1>
+                <p>Monitor food wastage, attendance spikes & contribute reasons for weekly graph trends.</p>
+            </div>
+            
+            <div class="timeframe-badge">
+                <i class="fa-regular fa-calendar-check" style="color: #c084fc;"></i>
+                <span>Active Period: <strong>Current Week (Mon - Sun)</strong></span>
+            </div>
+        </header>
+
+        <!-- KPI Summary Cards -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Daily Food Wastage</span>
+                    <div class="kpi-icon" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">18.4 <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">kg/day</span></div>
+                <div class="kpi-trend positive">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    <span>-12.8% vs last week (Improving)</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Average Attendance</span>
+                    <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">842 <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">students</span></div>
+                <div class="kpi-trend positive">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <span>+4.6% meal turnout</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Overall Meal Rating</span>
+                    <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">4.65 <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">/ 5.0</span></div>
+                <div class="kpi-trend positive">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Highest on Friday (Biryani)</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Student Insights</span>
+                    <div class="kpi-icon" style="background: rgba(139, 92, 246, 0.15); color: #c084fc;">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                </div>
+                <div class="kpi-value" id="totalInsightsCount">38 <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">reasons</span></div>
+                <div class="kpi-trend neutral">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Active student feedback</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Analytics Grid -->
+        <div class="analytics-grid">
+            
+            <!-- Left Column: Interactive Graphs -->
+            <div class="charts-column">
+                
+                <!-- Graph 1: Food Wastage Trend -->
+                <div class="glass-panel chart-card">
+                    <div class="chart-header">
+                        <div class="chart-header-left">
+                            <h2>
+                                <i class="fa-solid fa-chart-area" style="color: #f43f5e;"></i>
+                                Weekly Food Wastage Anomaly Graph
+                            </h2>
+                            <p>Click any day point to view or comment on the reason for the increase/decrease</p>
+                        </div>
+                        <div class="chart-pill-tabs">
+                            <button class="chart-tab-btn active" onclick="switchWastageView('all', this)">All Meals</button>
+                            <button class="chart-tab-btn" onclick="switchWastageView('dinner', this)">Dinner Only</button>
+                            <button class="chart-tab-btn" onclick="switchWastageView('lunch', this)">Lunch Only</button>
+                        </div>
+                    </div>
+
+                    <div class="chart-canvas-container">
+                        <canvas id="wastageChart"></canvas>
+                    </div>
+
+                    <!-- Anomaly Badges Strip (Quick Filter) -->
+                    <div class="graph-insights-strip">
+                        <span style="font-size: 0.78rem; color: var(--text-dim); display: flex; align-items: center; gap: 0.3rem;">
+                            <i class="fa-solid fa-filter"></i> Focus Anomaly:
+                        </span>
+                        <button class="insight-tag-btn active" onclick="filterReasonsByEvent('all', this)">
+                            🌐 All Graph Trends
+                        </button>
+                        <button class="insight-tag-btn" onclick="filterReasonsByEvent('Wednesday Spike', this)">
+                            📈 Wed Dinner Wastage Spike (+34kg)
+                        </button>
+                        <button class="insight-tag-btn" onclick="filterReasonsByEvent('Friday Low', this)">
+                            📉 Fri Biryani Wastage Drop (-22kg)
+                        </button>
+                        <button class="insight-tag-btn" onclick="filterReasonsByEvent('Sunday Drop', this)">
+                            📉 Sun Dinner Turnout Drop (-190)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Graph 2: Attendance vs Meal Rating Trend -->
+                <div class="glass-panel chart-card">
+                    <div class="chart-header">
+                        <div class="chart-header-left">
+                            <h2>
+                                <i class="fa-solid fa-users-line" style="color: #38bdf8;"></i>
+                                Student Turnout vs Food Satisfaction
+                            </h2>
+                            <p>Correlating student attendance numbers with daily meal taste ratings</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-canvas-container">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Student Reason & Explanation Forum -->
+            <div class="glass-panel forum-card">
+                <div class="forum-header">
+                    <h2>
+                        <i class="fa-regular fa-lightbulb" style="color: #f59e0b;"></i>
+                        Student Trend Explanations
+                    </h2>
+                    <p>Tell the Mess Committee <strong>WHY</strong> a specific increase or decrease happened on the graph.</p>
+                </div>
+
+                <!-- Form to Add Reason -->
+                <form class="reason-form" onsubmit="handleReasonSubmit(event)">
+                    <div class="form-title">
+                        <i class="fa-solid fa-pen-nib" style="color: #c084fc;"></i>
+                        <span>Post Reason for a Graph Increase / Decrease</span>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="trendSelect">Select Graph Anomaly / Trend <span style="color: #f43f5e;">*</span></label>
+                        <select id="trendSelect" class="form-select" required>
+                            <option value="Wednesday Spike">📈 Wednesday Dinner Wastage Spike (+34 kg)</option>
+                            <option value="Sunday Drop">📉 Sunday Dinner Attendance Drop (-190 Students)</option>
+                            <option value="Friday Low">📉 Friday Biryani Wastage Drop / Rating Surge</option>
+                            <option value="Monday Chapati">📈 Monday Breakfast Chapati Leftovers (+12 kg)</option>
+                            <option value="General Trend">📊 Other Weekly Menu Pattern</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Primary Factor / Cause</label>
+                        <div class="factor-chips" id="factorChips">
+                            <span class="factor-chip active" data-factor="Portion Size">Portion Size Overdose</span>
+                            <span class="factor-chip" data-factor="Food Taste / Quality">Food Taste / Spices</span>
+                            <span class="factor-chip" data-factor="Exam / College Event">College Exam / Outing</span>
+                            <span class="factor-chip" data-factor="Timings Delay">Queue / Timing Issue</span>
+                            <span class="factor-chip" data-factor="Special Dish">Special Dish Popularity</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="reasonText">Your Explanation / Comment <span style="color: #f43f5e;">*</span></label>
+                        <textarea 
+                            id="reasonText" 
+                            class="form-textarea" 
+                            placeholder="e.g. On Wednesday, the rice scoop size was doubled by the servers, so many students couldn't finish it..." 
+                            required></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1rem;">
+                        <input type="text" id="studentAuthor" class="form-input" value="Harish K. (B-304)" placeholder="Your Name & Room">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); cursor: pointer;">
+                            <input type="checkbox" id="anonCheck" onchange="toggleAnonInsight(this)">
+                            <span>Anonymous</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="submit-reason-btn" id="submitReasonBtn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Submit Graph Insight</span>
+                    </button>
+                </form>
+
+                <!-- Explanations Stream -->
+                <div class="reasons-stream" id="reasonsStream">
+                    <!-- Dynamic reason cards rendered here -->
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification Popup -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Seed Explanations Data
+        const seedReasons = [
+            {
+                id: "res-1",
+                trend: "Wednesday Spike",
+                trendTitle: "Wednesday Wastage Spike (+34 kg)",
+                trendType: "spike",
+                factor: "Portion Size",
+                text: "The servers on Wednesday dinner were putting 2 full big scoops of Jeera Rice by default. Many students only wanted 1 scoop and couldn't finish the excess quantity.",
+                author: "Harish K. (Block B - 304)",
+                time: "2 hours ago",
+                agrees: 29,
+                userAgreed: false,
+                wardenResponse: "Action Taken: Instructed serving staff to ask for single scoop first and only serve second upon request."
+            },
+            {
+                id: "res-2",
+                trend: "Sunday Drop",
+                trendTitle: "Sunday Attendance Drop (-190 Students)",
+                trendType: "drop",
+                factor: "Exam / College Event",
+                text: "Mid-semester exam prep was ongoing, and over 40% of 2nd year students had night library passes or ordered snacks outside before 7 PM.",
+                author: "Ananya R. (Block A - 210)",
+                time: "Yesterday",
+                agrees: 41,
+                userAgreed: false,
+                wardenResponse: "Noted: We will adjust raw material purchase on pre-exam weekends to avoid overcooking."
+            },
+            {
+                id: "res-3",
+                trend: "Friday Low",
+                trendTitle: "Friday Biryani Wastage Drop / Rating Surge",
+                trendType: "peak",
+                factor: "Special Dish",
+                text: "Biryani spice level and the fresh Raita were spot on! Almost every student finished their plates completely with zero leftover grains.",
+                author: "Vikram P. (Block C - 105)",
+                time: "2 days ago",
+                agrees: 64,
+                userAgreed: false,
+                wardenResponse: null
+            },
+            {
+                id: "res-4",
+                trend: "Wednesday Spike",
+                trendTitle: "Wednesday Wastage Spike (+34 kg)",
+                trendType: "spike",
+                factor: "Food Taste / Quality",
+                text: "The Dal Tadka on Wednesday had excess turmeric and salt, so several tables left half of their bowl unconsumed.",
+                author: "Karan S. (Block B - 118)",
+                time: "3 days ago",
+                agrees: 19,
+                userAgreed: false,
+                wardenResponse: null
+            }
+        ];
+
+        // Local Storage
+        function getStoredReasons() {
+            const data = localStorage.getItem('messmate_graph_reasons');
+            if (data) {
+                try {
+                    return JSON.parse(data);
+                } catch(e) {
+                    return seedReasons;
+                }
+            }
+            localStorage.setItem('messmate_graph_reasons', JSON.stringify(seedReasons));
+            return seedReasons;
+        }
+
+        function saveStoredReasons(reasons) {
+            localStorage.setItem('messmate_graph_reasons', JSON.stringify(reasons));
+        }
+
+        let allReasons = getStoredReasons();
+        let selectedTrendFilter = 'all';
+
+        // Render Reasons Feed
+        function renderReasons() {
+            const container = document.getElementById('reasonsStream');
+            const totalCountBadge = document.getElementById('totalInsightsCount');
+            totalCountBadge.innerHTML = `${allReasons.length} <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">reasons</span>`;
+
+            let filtered = allReasons;
+            if (selectedTrendFilter !== 'all') {
+                filtered = allReasons.filter(r => r.trend === selectedTrendFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-dim);">
+                        <i class="fa-regular fa-comment-dots" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        <p>No student explanations for this trend yet. Be the first to share what happened!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                return `
+                    <div class="reason-card">
+                        <div class="reason-card-header">
+                            <span class="trend-ref-tag ${item.trendType}">
+                                <i class="fa-solid ${item.trendType === 'spike' ? 'fa-arrow-trend-up' : (item.trendType === 'drop' ? 'fa-arrow-trend-down' : 'fa-star')}"></i>
+                                ${item.trendTitle}
+                            </span>
+                            <span class="reason-factor-pill">${item.factor}</span>
+                        </div>
+                        <p class="reason-text">"${item.text}"</p>
+                        ${item.wardenResponse ? `
+                            <div class="warden-action">
+                                <strong><i class="fa-solid fa-user-shield"></i> Mess Warden Action:</strong>
+                                ${item.wardenResponse}
+                            </div>
+                        ` : ''}
+                        <div class="reason-card-footer">
+                            <span><i class="fa-regular fa-user"></i> ${item.author} • ${item.time}</span>
+                            <button class="agree-btn ${item.userAgreed ? 'agreed' : ''}" onclick="handleAgree('${item.id}', event)">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                                <span>Agree (${item.agrees})</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle Agree / Upvote
+        function handleAgree(reasonId, event) {
+            const item = allReasons.find(r => r.id === reasonId);
+            if (!item) return;
+
+            item.userAgreed = !item.userAgreed;
+            item.agrees += item.userAgreed ? 1 : -1;
+            saveStoredReasons(allReasons);
+            renderReasons();
+
+            if (item.userAgreed) {
+                const btn = event.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const floater = document.createElement('span');
+                floater.className = 'floating-emoji';
+                floater.innerText = "👍 +1";
+                floater.style.left = `${rect.left + rect.width / 2}px`;
+                floater.style.top = `${rect.top}px`;
+                document.body.appendChild(floater);
+                setTimeout(() => floater.remove(), 800);
+            }
+        }
+
+        // Handle Submit Reason Form
+        function handleReasonSubmit(e) {
+            e.preventDefault();
+
+            const trendVal = document.getElementById('trendSelect').value;
+            const text = document.getElementById('reasonText').value.trim();
+            const activeFactorEl = document.querySelector('#factorChips .factor-chip.active');
+            const factor = activeFactorEl ? activeFactorEl.dataset.factor : 'General';
+            const isAnon = document.getElementById('anonCheck').checked;
+            const author = isAnon ? "Anonymous Student" : (document.getElementById('studentAuthor').value.trim() || "Student");
+
+            if (!text) return;
+
+            const trendMap = {
+                'Wednesday Spike': { title: 'Wednesday Wastage Spike (+34 kg)', type: 'spike' },
+                'Sunday Drop': { title: 'Sunday Attendance Drop (-190)', type: 'drop' },
+                'Friday Low': { title: 'Friday Biryani Wastage Drop', type: 'peak' },
+                'Monday Chapati': { title: 'Monday Breakfast Leftovers', type: 'spike' },
+                'General Trend': { title: 'General Weekly Menu Trend', type: 'peak' }
+            };
+
+            const selectedInfo = trendMap[trendVal] || { title: 'Weekly Anomaly', type: 'spike' };
+
+            const newReason = {
+                id: "res-" + Date.now(),
+                trend: trendVal,
+                trendTitle: selectedInfo.title,
+                trendType: selectedInfo.type,
+                factor: factor,
+                text: text,
+                author: author,
+                time: "Just now",
+                agrees: 1,
+                userAgreed: true,
+                wardenResponse: null
+            };
+
+            allReasons.unshift(newReason);
+            saveStoredReasons(allReasons);
+
+            document.getElementById('reasonText').value = "";
+            renderReasons();
+            showToast("Insight Submitted! 💡", "Your reason has been added for committee analysis.");
+        }
+
+        // Filter Reasons
+        function filterReasonsByEvent(trendKey, btn) {
+            selectedTrendFilter = trendKey;
+            document.querySelectorAll('.insight-tag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderReasons();
+        }
+
+        // Factor Chip Selector
+        document.querySelectorAll('#factorChips .factor-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('#factorChips .factor-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function toggleAnonInsight(checkbox) {
+            const authorInput = document.getElementById('studentAuthor');
+            if (checkbox.checked) {
+                authorInput.dataset.prev = authorInput.value;
+                authorInput.value = "Anonymous Student";
+                authorInput.disabled = true;
+                authorInput.style.opacity = "0.5";
+            } else {
+                authorInput.value = authorInput.dataset.prev || "Harish K. (B-304)";
+                authorInput.disabled = false;
+                authorInput.style.opacity = "1";
+            }
+        }
+
+        // Toast System
+        function showToast(title, msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <i class="fa-solid fa-chart-line" style="color: #c084fc; font-size: 1.3rem;"></i>
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700;">${title}</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">${msg}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 50);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        // Initialize Chart.js Graphs
+        let wastageChartInstance = null;
+        let attendanceChartInstance = null;
+
+        function initCharts() {
+            // Chart 1: Food Wastage
+            const ctxWastage = document.getElementById('wastageChart').getContext('2d');
+            const gradientWastage = ctxWastage.createLinearGradient(0, 0, 0, 250);
+            gradientWastage.addColorStop(0, 'rgba(244, 63, 94, 0.45)');
+            gradientWastage.addColorStop(1, 'rgba(244, 63, 94, 0.0)');
+
+            wastageChartInstance = new Chart(ctxWastage, {
+                type: 'line',
+                data: {
+                    labels: ['Mon (Poori/Rajma)', 'Tue (Paneer)', 'Wed (Jeera Rice ⚠️)', 'Thu (Kadhi Chawal)', 'Fri (Biryani Feast ⭐)', 'Sat (Chole Bhature)', 'Sun (Special Dinner)'],
+                    datasets: [{
+                        label: 'Total Wastage (kg)',
+                        data: [14.2, 11.5, 48.6, 16.0, 7.8, 15.4, 22.1],
+                        borderColor: '#f43f5e',
+                        backgroundColor: gradientWastage,
+                        borderWidth: 3,
+                        pointBackgroundColor: ['#f43f5e', '#f43f5e', '#ef4444', '#f43f5e', '#10b981', '#f43f5e', '#f97316'],
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: [5, 5, 8, 5, 8, 5, 6],
+                        pointHoverRadius: 10,
+                        fill: true,
+                        tension: 0.35
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            if (index === 2) {
+                                // Wednesday clicked
+                                document.getElementById('trendSelect').value = 'Wednesday Spike';
+                                showToast("Wednesday Selected", "Focusing on Wednesday Dinner Wastage Spike (+34kg). Share your reason!");
+                            } else if (index === 4) {
+                                document.getElementById('trendSelect').value = 'Friday Low';
+                                showToast("Friday Selected", "Focusing on Friday Biryani Wastage Drop.");
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 22, 32, 0.95)',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            titleFont: { family: 'Outfit', size: 13 },
+                            bodyFont: { family: 'Outfit', size: 12 },
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Food Wastage: ${context.parsed.y} kg ${context.parsed.y > 35 ? '⚠️ Spike Alert!' : (context.parsed.y < 10 ? '⭐ Best Score' : '')}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 }, callback: v => v + ' kg' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Attendance vs Satisfaction
+            const ctxAttendance = document.getElementById('attendanceChart').getContext('2d');
+            attendanceChartInstance = new Chart(ctxAttendance, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri (Biryani)', 'Sat', 'Sun (Drop ⚠️)'],
+                    datasets: [
+                        {
+                            label: 'Students Attended',
+                            data: [860, 845, 890, 850, 940, 810, 650],
+                            backgroundColor: 'rgba(56, 189, 248, 0.5)',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Satisfaction (out of 5⭐)',
+                            data: [4.4, 4.3, 3.8, 4.2, 4.9, 4.5, 4.1],
+                            type: 'line',
+                            borderColor: '#fbbf24',
+                            backgroundColor: '#fbbf24',
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#94a3b8', font: { family: 'Outfit', size: 12 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 22, 32, 0.95)',
+                            titleFont: { family: 'Outfit', size: 13 },
+                            bodyFont: { family: 'Outfit', size: 12 },
+                            padding: 10
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } },
+                            title: { display: true, text: 'Student Count', color: '#94a3b8' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            min: 3,
+                            max: 5,
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#fbbf24', font: { family: 'Outfit', size: 11 } },
+                            title: { display: true, text: 'Rating (⭐)', color: '#fbbf24' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function switchWastageView(view, btn) {
+            document.querySelectorAll('.chart-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (!wastageChartInstance) return;
+
+            if (view === 'dinner') {
+                wastageChartInstance.data.datasets[0].data = [8.1, 6.2, 34.8, 9.5, 4.1, 8.9, 14.5];
+            } else if (view === 'lunch') {
+                wastageChartInstance.data.datasets[0].data = [4.2, 3.8, 10.1, 5.0, 2.8, 4.5, 5.2];
+            } else {
+                wastageChartInstance.data.datasets[0].data = [14.2, 11.5, 48.6, 16.0, 7.8, 15.4, 22.1];
+            }
+            wastageChartInstance.update();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderReasons();
+            initCharts();
+        });
+    </script>
+</body>
+</html>
